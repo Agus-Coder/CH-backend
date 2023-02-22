@@ -8,6 +8,7 @@ const Manager = new ProductManager();
 const products = require('./routes.products')
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // SIN ESTO NO FUNCIONA!!!
 app.use("/api",products)
 
 app.listen(port, () => {

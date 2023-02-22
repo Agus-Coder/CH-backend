@@ -18,18 +18,34 @@ class ProductManager {
       let reducedProducts = products.slice(0, limit);
       const returnProducts = JSON.stringify(reducedProducts);
       return returnProducts;
-    } 
-      return data;
-    
+    }
+    return data;
   }
 
-  addProduct({ title, description, price, thumbnail, code, stock }) {
-    const data = fs.readFile(filePath, "utf-8");
+  addProduct({
+    title,
+    description,
+    price,
+    thumbnail,
+    code,
+    stock,
+    category,
+    status,
+  }) {
+    const data = fs.readFileSync(filePath, "utf-8");
 
     const products = JSON.parse(data);
     this.products = products;
 
-    if (!title || !description || !price || !thumbnail || !code || !stock) {
+    if (
+      !title ||
+      !description ||
+      !price ||
+      !thumbnail ||
+      !code ||
+      !stock ||
+      !category
+    ) {
       return "Please check again that you provided all the information";
     }
     let toAdd;
@@ -46,7 +62,17 @@ class ProductManager {
     if (!existingCode) {
       ProductManager.counter += 1 + Math.floor(Math.random() * 10);
 
-      toAdd = { id, title, description, price, thumbnail, code, stock };
+      toAdd = {
+        id,
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        category,
+        status: true,
+      };
 
       this.products.push(toAdd);
       console.log("New product added");
@@ -58,15 +84,22 @@ class ProductManager {
     }
   }
 
-  updateProduct = (id, propertyToModify, newPropertyValue) => {
+  updateProduct = ({ propertyToModify, newPropertyValue, id }) => {
     const data = fs.readFileSync(filePath, "utf-8");
+
+    const toModify = { propertyToModify, newPropertyValue, id }
 
     const products = JSON.parse(data);
     this.products = products;
+    const trueID = toModify.id;
+    const trueToModify = toModify.propertyToModify;
+    const trueNewValue = toModify.newPropertyValue;
+    console.log(typeof trueToModify);
 
-    const itm = this.products.findIndex((el) => el.id == id);
 
-    this.products[itm][propertyToModify] = newPropertyValue;
+    const itm = this.products.findIndex((el) => el.id == trueID);
+
+    this.products[itm][trueToModify] = trueNewValue; // estoy pasando un string en true modify y eso provoca ue la notacion bracket no funciones
 
     const toSave = JSON.stringify(this.products);
 
@@ -112,7 +145,3 @@ class ProductManager {
 }
 
 module.exports = ProductManager;
-
-const Manager = new ProductManager();
-
-Manager.getProducts();
